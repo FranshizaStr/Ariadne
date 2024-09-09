@@ -19,5 +19,11 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Ariadne"
-include(":app")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+rootProject.name = "AriadneRoot"
+include(":ariadne")
+include(":domain")
+include(":domain:login")
+include(":core")
+include(":core:utils")
