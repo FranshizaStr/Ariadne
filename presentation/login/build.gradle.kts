@@ -35,12 +35,12 @@ android {
 
 dependencies {
 
+    // projects
+    implementation(projects.domain.login)
+
     // di
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
-
-    // projects
-    implementation(projects.utils)
 
     // core
     implementation(libs.androidx.core.ktx)

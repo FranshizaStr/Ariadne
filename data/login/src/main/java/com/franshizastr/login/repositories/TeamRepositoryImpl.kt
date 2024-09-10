@@ -2,8 +2,9 @@ package com.franshizastr.login.repositories
 
 import com.franshizastr.login.models.TeamModel
 import com.franshizastr.CleanResult
+import javax.inject.Inject
 
-class TeamRepositoryImpl : TeamsRepository {
+class TeamRepositoryImpl @Inject constructor() : TeamsRepository {
 
     override fun addTeam(model: TeamModel): CleanResult<Unit> {
         TODO("Not yet implemented")

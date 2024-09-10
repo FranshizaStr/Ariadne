@@ -1,11 +1,10 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.org.jetbrains.kotlin.kapt)
 }
 
 android {
-    namespace = "com.franshizastr.login"
+    namespace = "com.franshizastr.presentation"
     compileSdk = 34
 
     defaultConfig {
@@ -35,14 +34,6 @@ android {
 
 dependencies {
 
-    // di
-    implementation(libs.dagger)
-    kapt(libs.dagger.compiler)
-
-    // projects
-    implementation(projects.utils)
-
-    // core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
