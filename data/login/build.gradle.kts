@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.franshizastr.utils"
+    namespace = "com.franshizastr.login"
     compileSdk = 34
 
     defaultConfig {
@@ -34,6 +34,14 @@ android {
 
 dependencies {
 
+    // di
+    implementation(libs.dagger)
+
+    // projects
+    implementation(projects.domain.login)
+    implementation(projects.utils)
+
+    // core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

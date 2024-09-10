@@ -1,9 +1,10 @@
 package com.franshizastr.login.usecases
 
+import com.franshizastr.CleanResult
 import com.franshizastr.login.repositories.TeamsRepository
-import com.franshizastr.errorsUtils.CleanResult
+import javax.inject.Inject
 
-class EditTeamUseCase(private val repo: TeamsRepository) {
+class EditTeamUseCase @Inject constructor(private val repo: TeamsRepository) {
     fun execute(
         id: String,
         teamName: String

@@ -1,7 +1,7 @@
 package com.franshizastr.login.repositories
 
 import com.franshizastr.login.models.TeamModel
-import com.franshizastr.errorsUtils.CleanResult
+import com.franshizastr.CleanResult
 
 interface TeamsRepository {
 

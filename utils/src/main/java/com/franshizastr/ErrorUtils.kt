@@ -1,4 +1,4 @@
-package com.franshizastr.errorsUtils
+package com.franshizastr
 
 sealed interface CleanResult<out T> {
     data class Success<out T>(val value: T) : CleanResult<T>

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.franshizastr.core"
+    namespace = "com.franshizastr.utils"
     compileSdk = 34
 
     defaultConfig {

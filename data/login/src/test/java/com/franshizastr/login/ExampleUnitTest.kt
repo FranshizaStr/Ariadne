@@ -1,4 +1,4 @@
-package com.franshizastr.errorsUtils
+package com.franshizastr.login
 
 import org.junit.Test
 
