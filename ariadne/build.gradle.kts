@@ -41,7 +41,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
     packaging {
         resources {
@@ -56,10 +56,14 @@ dependencies {
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
 
+    // room
+    implementation(libs.room)
+
     // projects
     implementation(projects.data.login)
     implementation(projects.presentation.login)
     implementation(projects.domain.login)
+    implementation(projects.core)
 
     // core
     implementation(libs.androidx.core.ktx)

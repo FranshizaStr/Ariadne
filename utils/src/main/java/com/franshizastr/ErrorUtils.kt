@@ -2,8 +2,8 @@ package com.franshizastr
 
 sealed interface CleanResult<out T> {
     data class Success<out T>(val value: T) : CleanResult<T>
-    data class Failure<out T>(val error: Error) : CleanResult<T>
-    data class Progress<out T>(val progress: Int): CleanResult<T>
+    data class Failure(val error: Error) : CleanResult<Nothing>
+    data class Progress(val progress: Int): CleanResult<Nothing>
 
     val isFailure: Boolean
         get() = this is Failure
@@ -29,7 +29,7 @@ sealed interface CleanResult<out T> {
         }
     }
 
-    abstract class Error(
+    data class Error(
         val previousError: Error?,
         val throwable: Throwable?,
         val message: String?,

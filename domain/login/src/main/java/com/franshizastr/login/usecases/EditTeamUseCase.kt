@@ -5,7 +5,7 @@ import com.franshizastr.login.repositories.TeamsRepository
 import javax.inject.Inject
 
 class EditTeamUseCase @Inject constructor(private val repo: TeamsRepository) {
-    fun execute(
+    suspend fun execute(
         id: String,
         teamName: String
     ): CleanResult<Unit> {

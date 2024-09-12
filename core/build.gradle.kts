@@ -2,11 +2,10 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
-    alias(libs.plugins.ksp)
 }
 
 android {
-    namespace = "com.franshizastr.login"
+    namespace = "com.franshizastr.core"
     compileSdk = 34
 
     defaultConfig {
@@ -40,20 +39,6 @@ dependencies {
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
 
-    // room
-    implementation(libs.room)
-    ksp(libs.room.compiler)
-
-    // coroutines
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.room.ktx)
-
-    // projects
-    implementation(projects.domain.login)
-    implementation(projects.utils)
-    implementation(projects.core)
-
-    // core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
