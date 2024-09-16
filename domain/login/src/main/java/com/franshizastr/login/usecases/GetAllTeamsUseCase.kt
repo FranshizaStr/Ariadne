@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetAllTeamsUseCase @Inject constructor(private val repo: TeamsRepository) {
-    suspend fun execute(): CleanResult<Flow<List<TeamModel>>> = repo.getAllTeams()
+    fun execute(): CleanResult<Flow<List<TeamModel>>> = repo.getAllTeams()
 }

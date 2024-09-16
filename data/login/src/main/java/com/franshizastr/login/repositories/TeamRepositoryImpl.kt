@@ -4,11 +4,12 @@ import com.franshizastr.login.models.TeamModel
 import com.franshizastr.CleanResult
 import com.franshizastr.login.database.TeamsDao
 import com.franshizastr.login.database.map
-import kotlinx.coroutines.CancellationException
+import com.franshizastr.safelyExecuteDbOperation
+import com.franshizastr.safelyExecuteSuspendableDbOperation
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -16,53 +17,6 @@ class TeamRepositoryImpl @Inject constructor(
     private val dao: TeamsDao,
     @Named("IoDispatchers") private val ioDispatcher: CoroutineDispatcher
 ) : TeamsRepository {
-
-    private suspend fun <T, S> safelyExecuteSuspendableDbOperation(
-        entity: S?,
-        operationDispatcher: CoroutineDispatcher,
-        operationDescription: String,
-        operation: suspend (teamsEntity: S?) -> CleanResult<T>,
-    ): CleanResult<T> {
-        return withContext(operationDispatcher) {
-            try {
-                operation(entity)
-            } catch (ex: CancellationException) {
-                throw ex
-            } catch (ex: Throwable) {
-                val error = CleanResult.Error(
-                    previousError = null,
-                    throwable = ex,
-                    level = CleanResult.Error.ErrorLevel.DATA,
-                    message = "exception happened while: $operationDescription"
-                )
-                CleanResult.Failure(
-                    error = error
-                )
-            }
-        }
-    }
-
-    private fun <T, S> safelyExecuteDbOperation(
-        entity: S?,
-        operationDescription: String,
-        operation: (teamsEntity: S?) -> CleanResult<T>,
-    ): CleanResult<T> {
-        return try {
-            operation(entity)
-        } catch (ex: CancellationException) {
-            throw ex
-        } catch (ex: Throwable) {
-            val error = CleanResult.Error(
-                previousError = null,
-                throwable = ex,
-                level = CleanResult.Error.ErrorLevel.DATA,
-                message = "exception happened while: $operationDescription"
-            )
-            CleanResult.Failure(
-                error = error
-            )
-        }
-    }
 
     override suspend fun addTeam(model: TeamModel): CleanResult<Unit> {
         return safelyExecuteSuspendableDbOperation(
@@ -86,6 +40,16 @@ class TeamRepositoryImpl @Inject constructor(
                 }
             }
             CleanResult.Success(teams)
+        }
+    }
+
+    override fun getTeamById(teamId: String): CleanResult<TeamModel> {
+        return safelyExecuteDbOperation(
+            entity = teamId,
+            operationDescription = " getting team from DB",
+        ) { id ->
+            val result = dao.getTeamById(id!!).map()
+            CleanResult.Success(result)
         }
     }
 

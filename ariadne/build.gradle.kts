@@ -64,6 +64,8 @@ dependencies {
     implementation(projects.presentation.login)
     implementation(projects.domain.login)
     implementation(projects.core)
+    implementation(projects.utils)
+    implementation(projects.domain.loginRecords)
 
     // core
     implementation(libs.androidx.core.ktx)

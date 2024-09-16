@@ -1,6 +1,7 @@
 package com.franshizastr.ariadne.di
 
 import android.content.Context
+import com.franshizastr.core.di.DispatchersModule
 import com.franshizastr.login.di.LoginDataModule
 import com.franshizastr.login.di.LoginPresentationDeps
 import com.franshizastr.login.di.LoginRepositoryModule
@@ -12,7 +13,8 @@ import javax.inject.Singleton
 @Component(
     modules = [
         LoginDataModule::class,
-        LoginRepositoryModule::class
+        LoginRepositoryModule::class,
+        DispatchersModule::class
     ]
 )
 interface AriadneAppComponent : LoginPresentationDeps {
@@ -26,3 +28,4 @@ interface AriadneAppComponent : LoginPresentationDeps {
         fun build(): AriadneAppComponent
     }
 }
+

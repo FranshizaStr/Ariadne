@@ -3,7 +3,6 @@ package com.franshizastr
 sealed interface CleanResult<out T> {
     data class Success<out T>(val value: T) : CleanResult<T>
     data class Failure(val error: Error) : CleanResult<Nothing>
-    data class Progress(val progress: Int): CleanResult<Nothing>
 
     val isFailure: Boolean
         get() = this is Failure
@@ -11,21 +10,16 @@ sealed interface CleanResult<out T> {
     val isSuccess: Boolean
         get() = this is Success
 
-    val isProgress: Boolean
-        get() = this is Progress
-
     val valueOrNull: T?
         get() = (this as? Success)?.value
 
     fun unwrapWithCallbacks(
         onSuccess: (result: T) -> Unit,
         onError: (error: Error) -> Unit,
-        onProgress: (progress: Int) -> Unit
     ) {
         when {
             isSuccess -> onSuccess((this as Success).value)
             isFailure -> onError((this as Failure).error)
-            isProgress -> onProgress((this as Progress).progress)
         }
     }
 

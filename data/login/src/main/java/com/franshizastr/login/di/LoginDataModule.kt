@@ -1,7 +1,7 @@
 package com.franshizastr.login.di
 
-import android.content.Context
 import androidx.room.Room
+import com.franshizastr.ContextProvider
 import com.franshizastr.core.di.DispatchersModule
 import com.franshizastr.login.database.TeamsDao
 import com.franshizastr.login.database.TeamsDatabase
@@ -17,9 +17,9 @@ class LoginDataModule {
 
     @Provides
     @Singleton
-    fun provideTeamsDatabase(context: Context): TeamsDatabase {
+    fun provideTeamsDatabase(contextProvider: ContextProvider): TeamsDatabase {
         return Room.databaseBuilder(
-            context = context,
+            context = contextProvider.context,
             klass = TeamsDatabase::class.java,
             name = "teamsDatabase"
         ).build()
@@ -32,7 +32,7 @@ class LoginDataModule {
     }
 }
 
-@Module(includes = [DispatchersModule::class])
+@Module
 interface LoginRepositoryModule {
 
     @Binds

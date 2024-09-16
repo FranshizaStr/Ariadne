@@ -20,4 +20,7 @@ interface TeamsDao {
 
     @Query("SELECT * FROM $TEAMS_TABLE_NAME")
     fun getAllTeams(): Flow<List<TeamsEntity>>
+
+    @Query("SELECT * FROM $TEAMS_TABLE_NAME WHERE id==:teamId")
+    fun getTeamById(teamId: String): TeamsEntity
 }

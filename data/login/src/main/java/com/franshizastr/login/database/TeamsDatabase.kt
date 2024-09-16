@@ -5,7 +5,8 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [TeamsEntity::class],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 abstract class TeamsDatabase : RoomDatabase() {
 

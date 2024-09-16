@@ -10,6 +10,8 @@ interface TeamsRepository {
 
     fun getAllTeams(): CleanResult<Flow<List<TeamModel>>>
 
+    fun getTeamById(teamId: String): CleanResult<TeamModel>
+
     suspend fun editTeam(id: String, teamName: String): CleanResult<Unit>
 
     suspend fun removeTeams(ids: List<String>): CleanResult<Unit>
