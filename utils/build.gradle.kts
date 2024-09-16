@@ -37,6 +37,7 @@ dependencies {
 
     // di
     implementation(libs.dagger)
+    implementation(libs.androidx.runtime.android)
     kapt(libs.dagger.compiler)
 
     implementation(libs.androidx.core.ktx)

@@ -12,9 +12,7 @@ class GetCSVFileNameForTeamUseCase @Inject constructor(
     private val getTeamByIdUseCase: GetTeamByIdUseCase
 ) {
 
-    suspend fun execute(
-        teamId: String,
-    ): CleanResult<String> {
+    suspend fun execute(teamId: String): CleanResult<String> {
         return withContext(dispatcher) {
             val team = async { getTeamByIdUseCase.execute(teamId) }.await()
             when(team) {

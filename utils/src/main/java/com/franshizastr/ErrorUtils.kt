@@ -4,22 +4,16 @@ sealed interface CleanResult<out T> {
     data class Success<out T>(val value: T) : CleanResult<T>
     data class Failure(val error: Error) : CleanResult<Nothing>
 
-    val isFailure: Boolean
-        get() = this is Failure
-
-    val isSuccess: Boolean
-        get() = this is Success
-
     val valueOrNull: T?
         get() = (this as? Success)?.value
 
-    fun unwrapWithCallbacks(
-        onSuccess: (result: T) -> Unit,
-        onError: (error: Error) -> Unit,
-    ) {
-        when {
-            isSuccess -> onSuccess((this as Success).value)
-            isFailure -> onError((this as Failure).error)
+    fun <S> unwrapWithCallbacks(
+        onSuccess: (result: T) -> S,
+        onError: (error: Failure) -> S,
+    ): S {
+        return when(this) {
+            is Success -> onSuccess(value)
+            is Failure -> onError(this)
         }
     }
 
@@ -36,3 +30,7 @@ sealed interface CleanResult<out T> {
         }
     }
 }
+
+data class ErrorVO(
+    val value: String
+)

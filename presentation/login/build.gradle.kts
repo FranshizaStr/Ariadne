@@ -37,9 +37,14 @@ dependencies {
 
     // projects
     implementation(projects.domain.login)
+    implementation(projects.utils)
 
     // di
     implementation(libs.dagger)
+    implementation(libs.androidx.lifecycle.viewmodel.android)
+    implementation(libs.androidx.runtime.android)
+    implementation(libs.androidx.foundation.android)
+    implementation(libs.androidx.material3.android)
     kapt(libs.dagger.compiler)
 
     // core
