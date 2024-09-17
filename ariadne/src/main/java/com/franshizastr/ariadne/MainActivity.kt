@@ -1,33 +1,27 @@
 package com.franshizastr.ariadne
 
-import android.app.Application
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.DocumentsContract
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.content.ContextCompat
-import com.franshizastr.ariadne.ui.theme.AriadneTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.franshizastr.ariadne.application.appComponent
+import com.franshizastr.daggerViewModel
+import com.franshizastr.designsystem.theme.AriadneTheme
+import com.franshizastr.login.di.DaggerLoginPresentationComponent
+import com.franshizastr.login.di.LoginPresentationComponent
+import com.franshizastr.login.navigation.LoginScreen
+import com.franshizastr.login.ui.LoginScreen
+import com.franshizastr.login.viewModel.LoginViewModel
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), FileWriter {
 
-    private fun writeToFile(
+    override fun writeToFile(
         fileName: String,
         writeToFileLambda: (uri: Uri?) -> Unit
     ) {
@@ -39,54 +33,42 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         enableEdgeToEdge()
+
+        var loginDiComponent: LoginPresentationComponent? = null
+        var loginViewModel: LoginViewModel? = null
+
         setContent {
-            val permissionRequestLauncher = rememberLauncherForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) {}
-            val isCoarsePermissionGranted = ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-            if (!isCoarsePermissionGranted) {
-                SideEffect {
-                    permissionRequestLauncher.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                }
-            }
-            val isFineLocationPermissionGranted = ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-            if (!isFineLocationPermissionGranted) {
-                SideEffect {
-                    permissionRequestLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-                }
-            }
             AriadneTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+                NavHost(
+                    navController = navController,
+                    startDestination = LoginScreen,
+                ) {
+                    loginDiComponent = DaggerLoginPresentationComponent
+                        .builder()
+                        .repositoryDeps(this@MainActivity.appComponent)
+                        .navigationCallback { teamId ->
+
+                        }
+                        .build()
+                    loginViewModel = loginDiComponent?.getLoginViewModel()
+                    loginViewModel?.let { viewModel ->
+                        composable<LoginScreen> {
+                            LoginScreen(
+                                viewModel = viewModel
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
+interface FileWriter {
+    fun writeToFile(
+        fileName: String,
+        writeToFileLambda: (uri: Uri?) -> Unit
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AriadneTheme {
-        Greeting("Android")
-    }
 }

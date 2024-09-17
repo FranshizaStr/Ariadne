@@ -4,6 +4,8 @@ import android.content.Context
 import com.franshizastr.core.di.DispatchersModule
 import com.franshizastr.login.di.LoginDataModule
 import com.franshizastr.login.di.LoginRepositoryModule
+import com.franshizastr.login.di.RepositoryDeps
+import com.franshizastr.login.repositories.TeamsRepository
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -16,7 +18,9 @@ import javax.inject.Singleton
         DispatchersModule::class
     ]
 )
-interface AriadneAppComponent {
+interface AriadneAppComponent : RepositoryDeps {
+
+    override fun repository(): TeamsRepository
 
     @Component.Builder
     interface Builder {

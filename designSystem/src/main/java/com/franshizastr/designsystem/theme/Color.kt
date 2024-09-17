@@ -1,4 +1,4 @@
-package com.franshizastr.ariadne.ui.theme
+package com.franshizastr.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -34,3 +34,11 @@ sealed interface CleanResult<out T> {
 data class ErrorVO(
     val value: String
 )
+
+fun CleanResult.Error.map(): ErrorVO? {
+    return this.message?.uppercase()?.let { ErrorVO(it) }
+}
+
+fun String.toErrorVO(): ErrorVO {
+    return ErrorVO(this.uppercase())
+}

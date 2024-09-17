@@ -10,6 +10,8 @@ import com.franshizastr.login.models.LoginState
 import com.franshizastr.login.usecases.AddTeamUseCase
 import com.franshizastr.login.usecases.EditTeamUseCase
 import com.franshizastr.login.usecases.GetAllTeamsUseCase
+import com.franshizastr.map
+import com.franshizastr.toErrorVO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -66,6 +68,12 @@ class LoginViewModel(
             }
             is LoginScreenEvent.OnNewTeamSelectEvent -> {
                 viewModelScope.launch {
+                    if (event.teamName.isEmpty() || event.teamName.isBlank()) {
+                        _error.emit(
+                            ("название команды не может быть пустым").toErrorVO()
+                        )
+                        return@launch
+                    }
                     val teamIdResult = async { addTeamUseCase.execute(event.teamName) }.await()
                     when(teamIdResult) {
                         is CleanResult.Success -> {
@@ -73,12 +81,18 @@ class LoginViewModel(
                         }
                         is CleanResult.Failure -> {
                             _error.emit(
-                                teamIdResult.error.message?.let { msg ->
-                                    ErrorVO(msg)
-                                }
+                                teamIdResult.error.map()
                             )
                         }
                     }
+                }
+            }
+            is LoginScreenEvent.OnOldTeamSelectEvent -> {
+                onTeamSnippetClick(event.teamId)
+            }
+            is LoginScreenEvent.OnErrorEventShown -> {
+                viewModelScope.launch {
+                    _error.emit(null)
                 }
             }
         }

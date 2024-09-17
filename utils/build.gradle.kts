@@ -40,6 +40,8 @@ dependencies {
     implementation(libs.androidx.runtime.android)
     kapt(libs.dagger.compiler)
 
+    implementation(libs.lifecycle.viewmodel.compose)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

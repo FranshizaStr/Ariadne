@@ -1,12 +1,10 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.org.jetbrains.kotlin.kapt)
-    alias(libs.plugins.serialization)
 }
 
 android {
-    namespace = "com.franshizastr.login"
+    namespace = "com.franshizastr.designsystem"
     compileSdk = 34
 
     defaultConfig {
@@ -42,28 +40,12 @@ android {
 
 dependencies {
 
-    // projects
-    implementation(projects.domain.login)
-    implementation(projects.utils)
-    implementation(projects.designSystem)
-
-    // navigation
-    implementation(libs.navigation.compose)
-    implementation(libs.kotlinx.serialization.json)
-
-    // di
-    implementation(libs.dagger)
-    implementation(libs.androidx.lifecycle.viewmodel.android)
-    implementation(libs.androidx.runtime.android)
-    implementation(libs.androidx.foundation.android)
-    implementation(libs.androidx.material3.android)
-    implementation(libs.androidx.ui.tooling.preview.android)
-    kapt(libs.dagger.compiler)
-
-    // core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.androidx.runtime.android)
+    implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.material3.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

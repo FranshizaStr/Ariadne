@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.serialization)
 }
 
 android {
@@ -59,13 +60,22 @@ dependencies {
     // room
     implementation(libs.room)
 
+    // navigation
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+
     // projects
     implementation(projects.data.login)
-    implementation(projects.presentation.login)
+
     implementation(projects.domain.login)
+    implementation(projects.domain.loginRecords)
+
+
+    implementation(projects.presentation.login)
+
     implementation(projects.core)
     implementation(projects.utils)
-    implementation(projects.domain.loginRecords)
+    implementation(projects.designSystem)
 
     // core
     implementation(libs.androidx.core.ktx)
