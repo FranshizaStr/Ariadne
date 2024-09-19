@@ -1,7 +1,9 @@
 package com.franshizastr.login.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusEvent
@@ -36,6 +39,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +66,7 @@ fun LoginScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val hostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
 
     AriadneTheme {
 
@@ -68,7 +74,13 @@ fun LoginScreen(
             snackbarHost = { SnackbarHost(hostState) },
         ) { _ ->
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = { focusManager.clearFocus() }
+                    ),
                 verticalArrangement = Arrangement.Center,
             ) {
                 item {
@@ -92,6 +104,7 @@ fun LoginScreen(
                                     LoginScreenEvent.OnOldTeamSelectEvent(team.id, team.teamName)
                                 )
                             },
+                            focusManager = focusManager,
                             onLongTapFinish = { newName ->
                                 viewModel.onEvent(
                                     LoginScreenEvent.LongTapOnTeamEvent(
@@ -99,7 +112,7 @@ fun LoginScreen(
                                         teamId = team.id
                                     )
                                 )
-                            }
+                            },
                         )
                     }
                 }
@@ -157,12 +170,12 @@ internal fun Title() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun NewTeamCard(
-    onClickFinished: (text: String) -> Unit,
+    onClickFinished: (text: String) -> Unit
 ) {
+    val focusRequester = FocusRequester()
     val previousFocusStateWasActive = remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
     var isHintVisible by remember { mutableStateOf(true) }
-    val focusRequester = FocusRequester()
 
     val stroke = Stroke(
         width = 10f,
@@ -248,11 +261,13 @@ internal fun NewTeamCard(
 internal fun OldTeamCard(
     teamVO: TeamVO,
     onClick: () -> Unit,
-    onLongTapFinish: (String) -> Unit
+    focusManager: FocusManager,
+    onLongTapFinish: (String) -> Unit,
 ) {
+    val focusRequester = FocusRequester()
+    val keyboardController = LocalSoftwareKeyboardController.current
     val isClickable = remember { mutableStateOf(false) }
     val text = remember { mutableStateOf(teamVO.teamName) }
-    val focusRequester = FocusRequester()
     val previousFocusStateWasActive = remember { mutableStateOf(false) }
 
     val stroke = Stroke(
@@ -293,6 +308,14 @@ internal fun OldTeamCard(
                 fontWeight = FontWeight.W700,
                 letterSpacing = 0.1.em
             ),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    onLongTapFinish(text.value)
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                }
+            ),
             singleLine = true,
             modifier = Modifier
                 .wrapContentHeight()
@@ -303,6 +326,8 @@ internal fun OldTeamCard(
                 .onKeyEvent { event ->
                     if (event.key == Key.Enter) {
                         onLongTapFinish(text.value)
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
                         return@onKeyEvent true
                     }
                     false
