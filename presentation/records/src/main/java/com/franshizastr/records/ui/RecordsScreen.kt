@@ -1,5 +1,6 @@
 package com.franshizastr.records.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,13 +10,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -24,21 +28,26 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.franshizastr.designsystem.Loading
 import com.franshizastr.designsystem.theme.AriadneTheme
 import com.franshizastr.records.models.RecordVO
 import com.franshizastr.records.models.RecordsScreenEvent
 import com.franshizastr.records.viewModel.RecordsViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun RecordsScreen(
-    viewModel: RecordsViewModel
+    viewModel: RecordsViewModel,
+    teamName: String
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val hostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     AriadneTheme {
 
@@ -46,6 +55,7 @@ fun RecordsScreen(
             snackbarHost = { SnackbarHost(hostState) },
         ) { _ ->
             Column {
+                TeamTitle(teamName)
                 LazyColumn(
                     modifier = Modifier.weight(0.8f)
                 ) {
@@ -57,22 +67,76 @@ fun RecordsScreen(
                         Record(record, animatedModifier)
                     }
                 }
-                Row(
-                    modifier = Modifier.weight(0.15f)
-                ) {
-                    val weightedModifier = Modifier.weight(1f)
-                    Button("Сохранить\nТочку", weightedModifier) {
-                        viewModel.onEvent(
-                            RecordsScreenEvent.TakeNewRecord
+                Buttons(
+                    viewModel = viewModel,
+                    weightedModifier = Modifier
+                        .weight(0.15f)
+                        .background(
+                            color = Color.Black,
+                            shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp)
                         )
+                )
+            }
+
+            val error = state.error
+            LaunchedEffect(error?.value) {
+                coroutineScope.launch {
+                    error?.value?.let { errorText ->
+                        hostState
+                            .showSnackbar(errorText)
                     }
-                    Button("Сохранить\r\nФайл", weightedModifier) {
-                        viewModel.onEvent(
-                            RecordsScreenEvent.SaveCSVFileWithRecords
-                        )
-                    }
+                    viewModel.onEvent(RecordsScreenEvent.OnErrorEventShown)
                 }
             }
+        }
+
+        if (state.isLoading) {
+            Loading()
+        }
+    }
+}
+
+@Composable
+private fun TeamTitle(
+    teamName: String
+) {
+    Text(
+        text = teamName.uppercase(),
+        fontSize = 30.sp,
+        fontFamily = FontFamily.Monospace,
+        fontWeight = FontWeight.W700,
+        letterSpacing = 0.1.em,
+        textAlign = TextAlign.Center,
+        color = Color.White,
+        modifier = Modifier
+            .wrapContentHeight()
+            .fillMaxWidth()
+            .padding(top = 45.dp)
+            .background(
+                color = Color.Black,
+                shape = RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp)
+            )
+    )
+}
+
+@Composable
+private fun Buttons(
+    viewModel: RecordsViewModel,
+    weightedModifier: Modifier = Modifier
+) {
+    Row(
+        modifier = weightedModifier
+    ) {
+        val weightedModifier = Modifier.weight(1f)
+        Button("Сохранить\nТочку", weightedModifier) {
+            viewModel.onEvent(
+                RecordsScreenEvent.TakeNewRecord
+            )
+        }
+        Button("Сохранить\r\nФайл", weightedModifier) {
+            viewModel.onEvent(
+                RecordsScreenEvent.SaveCSVFileWithRecords
+            )
         }
     }
 }
@@ -150,7 +214,7 @@ private fun Button(
             .padding(vertical = 15.dp)
             .wrapContentHeight()
             .drawBehind {
-                drawRoundRect(color = Color.Black, style = stroke)
+                drawRoundRect(color = Color.White, style = stroke)
             }
             .clickable { onClick() }
     ) {
@@ -161,6 +225,7 @@ private fun Button(
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.W700,
             letterSpacing = 0.1.em,
+            color = Color.White,
             modifier = Modifier
                 .wrapContentHeight()
                 .fillMaxWidth()

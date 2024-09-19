@@ -31,11 +31,13 @@ class RecordsViewModel(
 ) : ViewModel() {
 
     val _error = MutableStateFlow<ErrorVO?>(null)
+    val _isLoading = MutableStateFlow(false)
     val _state = getAllRecordsByTeamIdUseCase
         .execute(teamId)
         .unwrapWithCallbacks(
             onSuccess = { result ->
                 result.map { models ->
+                    _isLoading.emit(false)
                     val recordVos = models.map { model -> model.map() }
                     RecordsState(records = recordVos)
                 }
@@ -43,16 +45,15 @@ class RecordsViewModel(
             onError = { result ->
                 flow {
                     result.error.message?.let { errorMessage ->
-                        _error.emit(
-                            ErrorVO(errorMessage)
-                        )
+                        _isLoading.emit(false)
+                        _error.emit(ErrorVO(errorMessage))
                     }
                 }
             }
         )
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), RecordsState())
-    val state = combine(_state, _error) { state, error ->
-        state.copy(error = error)
+    val state = combine(_state, _error, _isLoading) { state, error, isLoading ->
+        state.copy(error = error, isLoading = isLoading)
     }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), RecordsState())
 
@@ -60,6 +61,7 @@ class RecordsViewModel(
         when(event) {
             is RecordsScreenEvent.TakeNewRecord -> {
                 viewModelScope.launch {
+                    _isLoading.emit(true)
                     getCurrentGpsAndSaveRecordUseCase.execute(teamId)
                 }
             }

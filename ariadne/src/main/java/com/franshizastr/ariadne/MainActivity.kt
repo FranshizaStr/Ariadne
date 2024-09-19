@@ -132,7 +132,7 @@ class MainActivity : ComponentActivity(), AndroidFileWrite {
                             }
                             EnterAnimation {
                                 recordsViewModel?.let { viewModel ->
-                                    RecordsScreen(viewModel)
+                                    RecordsScreen(viewModel, args.teamName)
                                 }
                             }
                         }
