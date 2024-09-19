@@ -18,10 +18,10 @@ class RecordRepositoryImpl @Inject constructor(
 
     override fun getAllRecordsByTeamId(teamId: String): CleanResult<Flow<List<RecordModel>>> {
         return safelyExecuteDbOperation(
-            entity = null,
+            entity = teamId,
             operationDescription = " observing records from DB"
-        ) { _ ->
-            val records = dao.getAllTeams().map { models ->
+        ) { entity ->
+            val records = dao.getAllTeamRecords(entity!!).map { models ->
                 models.map { model ->
                     model.map()
                 }

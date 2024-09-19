@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.franshizastr.CleanResult
 import com.franshizastr.ariadne.application.appComponent
+import com.franshizastr.designsystem.EnterAnimation
 import com.franshizastr.designsystem.daggerViewModel
 import com.franshizastr.designsystem.theme.AriadneTheme
 import com.franshizastr.login.di.DaggerLoginPresentationComponent
@@ -87,6 +88,8 @@ class MainActivity : ComponentActivity(), AndroidFileWrite {
                     startDestination = LoginScreen,
                 ) {
                     composable<LoginScreen> {
+                        recordsViewModel = null
+                        recordsDiComponent = null
                         loginDiComponent = DaggerLoginPresentationComponent
                             .builder()
                             .repositoryDeps(this@MainActivity.appComponent)
@@ -101,9 +104,11 @@ class MainActivity : ComponentActivity(), AndroidFileWrite {
                                 component.getLoginViewModel()
                             }
                             loginViewModel?.let { viewModel ->
-                                LoginScreen(
-                                    viewModel = viewModel
-                                )
+                                EnterAnimation {
+                                    LoginScreen(
+                                        viewModel = viewModel
+                                    )
+                                }
                             }
                         }
                     }
@@ -122,8 +127,10 @@ class MainActivity : ComponentActivity(), AndroidFileWrite {
                             recordsViewModel = daggerViewModel {
                                 component.getRecordsViewModel()
                             }
-                            recordsViewModel?.let { viewModel ->
-                                RecordsScreen(viewModel)
+                            EnterAnimation {
+                                recordsViewModel?.let { viewModel ->
+                                    RecordsScreen(viewModel)
+                                }
                             }
                         }
                     }
@@ -136,5 +143,7 @@ class MainActivity : ComponentActivity(), AndroidFileWrite {
         super.onDestroy()
         loginDiComponent = null
         loginViewModel = null
+        recordsDiComponent = null
+        recordsViewModel = null
     }
 }

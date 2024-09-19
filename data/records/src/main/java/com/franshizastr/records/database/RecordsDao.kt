@@ -14,6 +14,6 @@ interface RecordsDao {
     @Query("DELETE FROM $RECORD_TABLE_NAME WHERE teamId = :teamId")
     suspend fun deleteTeamRecords(teamId: String)
 
-    @Query("SELECT * FROM $RECORD_TABLE_NAME ORDER BY time ASC")
-    fun getAllTeams(): Flow<List<RecordEntity>>
+    @Query("SELECT * FROM $RECORD_TABLE_NAME WHERE teamId = :teamId ORDER BY time ASC")
+    fun getAllTeamRecords(teamId: String): Flow<List<RecordEntity>>
 }

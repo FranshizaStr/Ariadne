@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -48,10 +49,12 @@ fun RecordsScreen(
                 LazyColumn(
                     modifier = Modifier.weight(0.8f)
                 ) {
-                    state.records.map { recordVO ->
-                        item {
-                            Record(recordVO)
-                        }
+                    items(
+                        items = state.records,
+                        key = { record -> record.id }
+                    ) { record ->
+                        val animatedModifier = Modifier.animateItem()
+                        Record(record, animatedModifier)
                     }
                 }
                 Row(
@@ -77,10 +80,10 @@ fun RecordsScreen(
 @Composable
 private fun Record(
     recordVO: RecordVO,
+    modifier: Modifier = Modifier
 ) {
-
     Column (
-        modifier = Modifier
+        modifier = modifier
             .padding(vertical = 15.dp)
             .padding(horizontal = 15.dp)
     ) {
