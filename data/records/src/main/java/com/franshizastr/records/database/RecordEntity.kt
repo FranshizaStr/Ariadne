@@ -13,7 +13,8 @@ data class RecordEntity(
     val teamId: String,
     val time: Long,
     val longitude: Double,
-    val latitude: Double
+    val latitude: Double,
+    val altitude: Double
 )
 
 fun RecordEntity.map(): RecordModel {
@@ -23,7 +24,8 @@ fun RecordEntity.map(): RecordModel {
             teamId = teamId,
             time = time,
             longitude = longitude,
-            latitude = latitude
+            latitude = latitude,
+            altitude = altitude
         )
     }
 }
@@ -35,7 +37,8 @@ fun RecordModel.map(): RecordEntity {
             teamId = teamId,
             time = time,
             longitude = longitude,
-            latitude = latitude
+            latitude = latitude,
+            altitude = altitude
         )
     }
 }

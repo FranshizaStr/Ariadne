@@ -9,7 +9,8 @@ data class RecordModel(
     val teamId: String,
     val time: Long,
     val longitude: Double,
-    val latitude: Double
+    val latitude: Double,
+    val altitude: Double
 )
 
 fun Location.map(
@@ -21,7 +22,8 @@ fun Location.map(
             teamId = teamId,
             longitude = this.longitude,
             latitude = this.longitude,
-            time = TimeUtils.getTimeInstant()
+            time = TimeUtils.getTimeInstant(),
+            altitude = this.altitude
         )
     }
 }

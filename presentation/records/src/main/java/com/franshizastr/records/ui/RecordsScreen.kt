@@ -84,9 +84,10 @@ private fun Record(
             .padding(vertical = 15.dp)
             .padding(horizontal = 15.dp)
     ) {
-        RecordTextLine(recordVO.time)
-        RecordTextLine(recordVO.latitude)
-        RecordTextLine(recordVO.longitude)
+        RecordTextLine("время - ${recordVO.time}")
+        RecordTextLine("lat - ${recordVO.latitude}")
+        RecordTextLine("long - ${recordVO.longitude}")
+        RecordTextLine("alt = ${recordVO.altitude}")
     }
 }
 

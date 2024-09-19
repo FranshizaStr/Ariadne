@@ -1,14 +1,14 @@
 package com.franshizastr.records.models
 
 import android.text.format.DateFormat
-import java.text.SimpleDateFormat
 import java.util.Calendar
 
 data class RecordVO(
     val id: String,
     val time: String,
     val longitude: String,
-    val latitude: String
+    val latitude: String,
+    val altitude: String
 )
 
 fun RecordModel.map(): RecordVO {
@@ -20,7 +20,8 @@ fun RecordModel.map(): RecordVO {
             id = id,
             latitude = latitude.toString().substring(0, 8),
             longitude = longitude.toString().substring(0, 8),
-            time = time
+            time = time,
+            altitude = altitude.toString()
         )
     }
 }
