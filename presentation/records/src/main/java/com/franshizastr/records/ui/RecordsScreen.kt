@@ -194,6 +194,7 @@ private fun RecordTextLine(
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.W700,
             letterSpacing = 0.1.em,
+            color = Color.Gray,
             modifier = Modifier
                 .wrapContentHeight()
                 .fillMaxWidth()

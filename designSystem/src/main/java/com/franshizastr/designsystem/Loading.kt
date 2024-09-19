@@ -38,7 +38,6 @@ fun Loading() {
             modifier = Modifier
                 .fillMaxSize()
                 .align(Alignment.Center)
-                .background(color = Color.Gray.copy(alpha = 0.5f))
         ) {
             val scope = LocalLifecycleOwner.current.lifecycleScope
             var animationProgress by remember { mutableStateOf("") }
@@ -61,10 +60,9 @@ fun Loading() {
                 fontFamily = FontFamily.Monospace,
                 fontWeight = FontWeight.W700,
                 letterSpacing = 0.1.em,
-                color = Color.White,
+                color = Color.Black,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
+                    .fillMaxSize()
                     .padding(horizontal = 30.dp)
                     .padding(top = 30.dp),
                 textAlign = TextAlign.Center
