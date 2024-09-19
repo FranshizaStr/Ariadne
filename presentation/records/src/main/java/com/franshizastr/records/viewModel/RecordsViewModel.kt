@@ -11,6 +11,7 @@ import com.franshizastr.records.models.RecordsState
 import com.franshizastr.records.models.map
 import com.franshizastr.records.usecases.GetAllRecordsByTeamIdUseCase
 import com.franshizastr.records.usecases.GetCurrentGpsAndSaveRecordUseCase
+import com.franshizastr.records.usecases.RemoveTeamRecordsUseCase
 import com.franshizastr.records.usecases.WriteFinalFileUseCase
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,8 @@ class RecordsViewModel(
     private val getCSVFileNameForTeamUseCase: GetCSVFileNameForTeamUseCase,
     private val getAllRecordsByTeamIdUseCase: GetAllRecordsByTeamIdUseCase,
     private val getCurrentGpsAndSaveRecordUseCase: GetCurrentGpsAndSaveRecordUseCase,
-    private val writeFinalFileUseCase: WriteFinalFileUseCase
+    private val writeFinalFileUseCase: WriteFinalFileUseCase,
+    private val removeTeamRecordsUseCase: RemoveTeamRecordsUseCase
 ) : ViewModel() {
 
     val _error = MutableStateFlow<ErrorVO?>(null)
@@ -98,6 +100,11 @@ class RecordsViewModel(
             is RecordsScreenEvent.OnErrorEventShown -> {
                 viewModelScope.launch {
                     _error.emit(null)
+                }
+            }
+            is RecordsScreenEvent.DeleteRecords -> {
+                viewModelScope.launch {
+                    removeTeamRecordsUseCase.execute(teamId)
                 }
             }
         }

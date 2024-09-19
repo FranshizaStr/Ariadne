@@ -1,5 +1,6 @@
 package com.franshizastr.records.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +42,7 @@ import com.franshizastr.records.viewModel.RecordsViewModel
 import kotlinx.coroutines.launch
 
 @Composable
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun RecordsScreen(
     viewModel: RecordsViewModel,
     teamName: String
@@ -69,7 +71,7 @@ fun RecordsScreen(
                 }
                 Buttons(
                     viewModel = viewModel,
-                    weightedModifier = Modifier
+                    modifier = Modifier
                         .weight(0.15f)
                         .background(
                             color = Color.Black,
@@ -122,10 +124,10 @@ private fun TeamTitle(
 @Composable
 private fun Buttons(
     viewModel: RecordsViewModel,
-    weightedModifier: Modifier = Modifier
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = weightedModifier
+        modifier = modifier
     ) {
         val weightedModifier = Modifier.weight(1f)
         Button("Сохранить\nТочку", weightedModifier) {
@@ -136,6 +138,11 @@ private fun Buttons(
         Button("Сохранить\r\nФайл", weightedModifier) {
             viewModel.onEvent(
                 RecordsScreenEvent.SaveCSVFileWithRecords
+            )
+        }
+        Button("Удалить\r\nТочки", weightedModifier) {
+            viewModel.onEvent(
+                RecordsScreenEvent.DeleteRecords
             )
         }
     }
@@ -220,17 +227,18 @@ private fun Button(
     ) {
         Text(
             text = text.uppercase(),
-            fontSize = 13.sp,
-            lineHeight = 16.sp,
+            fontSize = 10.sp,
+            lineHeight = 13.sp,
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.W700,
             letterSpacing = 0.1.em,
             color = Color.White,
+            textAlign = TextAlign.Center,
             modifier = Modifier
                 .wrapContentHeight()
                 .fillMaxWidth()
                 .align(Alignment.CenterVertically)
-                .padding(30.dp)
+                .padding(vertical = 30.dp)
         )
     }
 }

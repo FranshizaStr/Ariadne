@@ -4,4 +4,5 @@ sealed class RecordsScreenEvent {
     data object SaveCSVFileWithRecords : RecordsScreenEvent()
     data object TakeNewRecord : RecordsScreenEvent()
     data object OnErrorEventShown: RecordsScreenEvent()
+    data object DeleteRecords: RecordsScreenEvent()
 }

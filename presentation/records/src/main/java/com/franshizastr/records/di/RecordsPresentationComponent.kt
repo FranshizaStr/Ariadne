@@ -8,6 +8,7 @@ import com.franshizastr.records.repositories.CurrentGpsRepository
 import com.franshizastr.records.repositories.RecordRepository
 import com.franshizastr.records.usecases.GetAllRecordsByTeamIdUseCase
 import com.franshizastr.records.usecases.GetCurrentGpsAndSaveRecordUseCase
+import com.franshizastr.records.usecases.RemoveTeamRecordsUseCase
 import com.franshizastr.records.usecases.WriteFinalFileUseCase
 import com.franshizastr.records.viewModel.RecordsViewModel
 import dagger.BindsInstance
@@ -68,6 +69,7 @@ class RecordsVMModule {
         getAllRecordsByTeamIdUseCase: GetAllRecordsByTeamIdUseCase,
         getCurrentGpsAndSaveRecordUseCase: GetCurrentGpsAndSaveRecordUseCase,
         writeFinalFileUseCase: WriteFinalFileUseCase,
+        removeTeamRecordsUseCase: RemoveTeamRecordsUseCase,
         @Named("teamId") teamId: String,
         @Named("teamName") teamName: String
     ): RecordsViewModel {
@@ -77,7 +79,8 @@ class RecordsVMModule {
             getCSVFileNameForTeamUseCase,
             getAllRecordsByTeamIdUseCase,
             getCurrentGpsAndSaveRecordUseCase,
-            writeFinalFileUseCase
+            writeFinalFileUseCase,
+            removeTeamRecordsUseCase
         )
     }
 }
