@@ -1,6 +1,7 @@
 package com.franshizastr.ariadne
 
 import android.Manifest
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -66,6 +67,8 @@ class MainActivity : ComponentActivity(), AndroidFileWrite {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         ActivityCompat.requestPermissions(
             this@MainActivity,
