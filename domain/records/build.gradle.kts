@@ -41,6 +41,8 @@ dependencies {
 
     // projects
     implementation(projects.utils)
+    implementation(projects.domain.login)
+    implementation(projects.core)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

@@ -25,7 +25,7 @@ class LoginViewModel(
     getAllTeamsUseCase: GetAllTeamsUseCase,
     private val addTeamUseCase: AddTeamUseCase,
     private val editTeamUseCase: EditTeamUseCase,
-    private val onTeamSnippetClick: (teamId: String) -> (Unit)
+    private val onTeamSnippetClick: (teamId: String, teamName: String) -> (Unit)
 ) : ViewModel() {
 
     private val _error = MutableStateFlow<ErrorVO?>(null)
@@ -45,7 +45,6 @@ class LoginViewModel(
                             ErrorVO(errorMessage)
                         )
                     }
-                    LoginState()
                 }
             }
         )
@@ -77,7 +76,7 @@ class LoginViewModel(
                     val teamIdResult = async { addTeamUseCase.execute(event.teamName) }.await()
                     when(teamIdResult) {
                         is CleanResult.Success -> {
-                            onTeamSnippetClick(teamIdResult.value)
+                            onTeamSnippetClick(teamIdResult.value, event.teamName)
                         }
                         is CleanResult.Failure -> {
                             _error.emit(
@@ -88,7 +87,7 @@ class LoginViewModel(
                 }
             }
             is LoginScreenEvent.OnOldTeamSelectEvent -> {
-                onTeamSnippetClick(event.teamId)
+                onTeamSnippetClick(event.teamId, event.teamName)
             }
             is LoginScreenEvent.OnErrorEventShown -> {
                 viewModelScope.launch {

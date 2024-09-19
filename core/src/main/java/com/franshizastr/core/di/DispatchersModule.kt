@@ -10,7 +10,6 @@ import javax.inject.Named
 class DispatchersModule {
 
     @Provides
-    @Named("IoDispatchers")
     fun bindIoDispatchers(): CoroutineDispatcher {
         return Dispatchers.IO
     }

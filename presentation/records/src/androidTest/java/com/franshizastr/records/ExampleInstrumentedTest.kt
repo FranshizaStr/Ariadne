@@ -1,4 +1,4 @@
-package com.franshizastr.loginrecords
+package com.franshizastr.records
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.franshizastr.loginrecords.test", appContext.packageName)
+        assertEquals("com.franshizastr.records.test", appContext.packageName)
     }
 }

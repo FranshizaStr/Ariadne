@@ -1,0 +1,167 @@
+package com.franshizastr.records.ui
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.franshizastr.designsystem.theme.AriadneTheme
+import com.franshizastr.records.models.RecordVO
+import com.franshizastr.records.models.RecordsScreenEvent
+import com.franshizastr.records.viewModel.RecordsViewModel
+
+@Composable
+fun RecordsScreen(
+    viewModel: RecordsViewModel
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val hostState = remember { SnackbarHostState() }
+
+    AriadneTheme {
+
+        Scaffold(
+            snackbarHost = { SnackbarHost(hostState) },
+        ) { _ ->
+            Column {
+                LazyColumn(
+                    modifier = Modifier.weight(0.8f)
+                ) {
+                    state.records.map { recordVO ->
+                        item {
+                            Record(recordVO)
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier.weight(0.15f)
+                ) {
+                    val weightedModifier = Modifier.weight(1f)
+                    Button("Сохранить\nТочку", weightedModifier) {
+                        viewModel.onEvent(
+                            RecordsScreenEvent.TakeNewRecord
+                        )
+                    }
+                    Button("Сохранить\r\nФайл", weightedModifier) {
+                        viewModel.onEvent(
+                            RecordsScreenEvent.SaveCSVFileWithRecords
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun Record(
+    recordVO: RecordVO,
+) {
+
+    Column (
+        modifier = Modifier
+            .padding(vertical = 15.dp)
+            .padding(horizontal = 15.dp)
+    ) {
+        RecordTextLine(recordVO.time)
+        RecordTextLine(recordVO.latitude)
+        RecordTextLine(recordVO.longitude)
+    }
+}
+
+@Composable
+private fun RecordTextLine(
+    text: String
+) {
+    val stroke = Stroke(
+        width = 10f,
+        pathEffect = PathEffect.
+        chainPathEffect(
+            outer = PathEffect.dashPathEffect(floatArrayOf(20f, 20f), 0f),
+            inner = PathEffect.cornerPathEffect(50f)
+        )
+    )
+
+    Row(
+        horizontalArrangement = Arrangement.Absolute.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .drawBehind {
+                drawRoundRect(color = Color.Black, style = stroke)
+            }
+    ) {
+        Text(
+            text = text,
+            fontSize = 13.sp,
+            lineHeight = 16.sp,
+            fontFamily = FontFamily.Monospace,
+            fontWeight = FontWeight.W700,
+            letterSpacing = 0.1.em,
+            modifier = Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .align(Alignment.CenterVertically)
+                .padding(15.dp)
+        )
+    }
+}
+
+@Composable
+private fun Button(
+    text: String,
+    modifier: Modifier,
+    onClick: () -> Unit,
+) {
+    val stroke = Stroke(
+        width = 10f,
+        pathEffect = PathEffect.cornerPathEffect(50f)
+    )
+
+    Row(
+        horizontalArrangement = Arrangement.Absolute.Center,
+        modifier = modifier
+            .padding(horizontal = 10.dp)
+            .padding(vertical = 15.dp)
+            .wrapContentHeight()
+            .drawBehind {
+                drawRoundRect(color = Color.Black, style = stroke)
+            }
+            .clickable { onClick() }
+    ) {
+        Text(
+            text = text.uppercase(),
+            fontSize = 13.sp,
+            lineHeight = 16.sp,
+            fontFamily = FontFamily.Monospace,
+            fontWeight = FontWeight.W700,
+            letterSpacing = 0.1.em,
+            modifier = Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .align(Alignment.CenterVertically)
+                .padding(30.dp)
+        )
+    }
+}

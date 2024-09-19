@@ -11,9 +11,9 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Scope
 
-interface RepositoryDeps {
+interface LoginDeps {
 
-    fun repository(): TeamsRepository
+    fun teamsRepository(): TeamsRepository
 }
 
 @LoginPresentationScope
@@ -22,7 +22,7 @@ interface RepositoryDeps {
         LoginVMModule::class
     ],
     dependencies = [
-        RepositoryDeps::class
+        LoginDeps::class
     ]
 )
 interface LoginPresentationComponent {
@@ -32,10 +32,12 @@ interface LoginPresentationComponent {
     @Component.Builder
     interface Builder {
 
-        fun repositoryDeps(repositoryDeps: RepositoryDeps): Builder
+        fun repositoryDeps(loginDeps: LoginDeps): Builder
 
         @BindsInstance
-        fun navigationCallback(onTeamSnippetClick: (teamId: String) -> (Unit)): Builder
+        fun navigationCallback(
+            onTeamSnippetClick: (teamId: String, teamName: String) -> (Unit)
+        ): Builder
 
         fun build(): LoginPresentationComponent
     }
@@ -50,7 +52,7 @@ class LoginVMModule {
         getAllTeamsUseCase: GetAllTeamsUseCase,
         addTeamUseCase: AddTeamUseCase,
         editTeamUseCase: EditTeamUseCase,
-        onTeamSnippetClick: (teamId: String) -> (Unit)
+        onTeamSnippetClick: (teamId: String, teamName: String) -> (Unit)
     ): LoginViewModel {
         return LoginViewModel(
             getAllTeamsUseCase,

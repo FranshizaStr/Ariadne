@@ -1,4 +1,4 @@
-package com.franshizastr.loginrecords
+package com.franshizastr.records
 
 import org.junit.Test
 

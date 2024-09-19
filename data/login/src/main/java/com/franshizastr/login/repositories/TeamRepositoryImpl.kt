@@ -15,7 +15,7 @@ import javax.inject.Named
 
 class TeamRepositoryImpl @Inject constructor(
     private val dao: TeamsDao,
-    @Named("IoDispatchers") private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher
 ) : TeamsRepository {
 
     override suspend fun addTeam(model: TeamModel): CleanResult<Unit> {

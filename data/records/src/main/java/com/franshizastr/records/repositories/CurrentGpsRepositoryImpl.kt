@@ -11,6 +11,7 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
+import com.google.android.gms.tasks.Tasks
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -35,13 +36,13 @@ class CurrentGpsRepositoryImpl @Inject constructor(
             Manifest.permission.ACCESS_FINE_LOCATION
         )
         val isFineLocationPermissionGranted =
-            fineLocationPermissionStatus != PackageManager.PERMISSION_GRANTED
+            fineLocationPermissionStatus == PackageManager.PERMISSION_GRANTED
         val coarseLocationPermissionStatus = ActivityCompat.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
         val isCoarsePermissionGranted =
-            coarseLocationPermissionStatus != PackageManager.PERMISSION_GRANTED
+            coarseLocationPermissionStatus == PackageManager.PERMISSION_GRANTED
 
         return if (isFineLocationPermissionGranted && isCoarsePermissionGranted) {
             val locationTask = locationProvider.getCurrentLocation(
@@ -50,7 +51,7 @@ class CurrentGpsRepositoryImpl @Inject constructor(
             )
             withContext(dispatcher) {
                 try {
-                    val location = locationTask.result
+                    val location = Tasks.await(locationTask)
                     CleanResult.Success(location)
                 } catch (ex: Throwable) {
                     CleanResult.Failure(

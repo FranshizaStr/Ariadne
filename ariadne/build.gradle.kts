@@ -66,16 +66,21 @@ dependencies {
 
     // projects
     implementation(projects.data.login)
+    implementation(projects.data.records)
 
     implementation(projects.domain.login)
-    implementation(projects.domain.loginRecords)
-
+    implementation(projects.domain.records)
 
     implementation(projects.presentation.login)
+    implementation(projects.presentation.records)
 
     implementation(projects.core)
     implementation(projects.utils)
     implementation(projects.designSystem)
+
+    implementation(libs.play.services.location)
+
+    implementation(libs.accompanist.permissions)
 
     // core
     implementation(libs.androidx.core.ktx)

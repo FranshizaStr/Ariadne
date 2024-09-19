@@ -89,7 +89,7 @@ fun LoginScreen(
                             teamVO = team,
                             onClick = {
                                 viewModel.onEvent(
-                                    LoginScreenEvent.OnOldTeamSelectEvent(team.id)
+                                    LoginScreenEvent.OnOldTeamSelectEvent(team.id, team.teamName)
                                 )
                             },
                             onLongTapFinish = { newName ->
@@ -139,8 +139,8 @@ internal fun Title() {
     }
     Text(
         text = (text + animationProgress).uppercase(),
-        fontSize = 26.sp,
-        lineHeight = 30.sp,
+        fontSize = 22.sp,
+        lineHeight = 26.sp,
         fontFamily = FontFamily.Monospace,
         fontWeight = FontWeight.W700,
         letterSpacing = 0.1.em,
@@ -149,7 +149,8 @@ internal fun Title() {
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(horizontal = 30.dp)
-            .padding(top = 30.dp)
+            .padding(top = 30.dp),
+        textAlign = TextAlign.Center
     )
 }
 
@@ -228,13 +229,6 @@ internal fun NewTeamCard(
                 .fillMaxWidth()
                 .align(Alignment.CenterVertically)
                 .padding(30.dp)
-                .onKeyEvent { event ->
-                    if (event.key == Key.Enter) {
-                        onClickFinished(text)
-                        return@onKeyEvent true
-                    }
-                    false
-                }
                 .focusRequester(focusRequester)
                 .onFocusEvent { event ->
                     when {

@@ -1,11 +1,12 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.serialization)
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
 }
 
 android {
-    namespace = "com.franshizastr.loginrecords"
+    namespace = "com.franshizastr.records"
     compileSdk = 34
 
     defaultConfig {
@@ -24,6 +25,12 @@ android {
             )
         }
     }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.8"
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -35,13 +42,19 @@ android {
 
 dependencies {
 
-    // projects
+    // navigation
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+
+    // project
     implementation(projects.domain.records)
-    implementation(projects.domain.login)
     implementation(projects.utils)
+    implementation(projects.designSystem)
+    implementation(projects.core)
 
     // di
     implementation(libs.dagger)
+    implementation(libs.androidx.material3.android)
     kapt(libs.dagger.compiler)
 
     implementation(libs.androidx.core.ktx)
