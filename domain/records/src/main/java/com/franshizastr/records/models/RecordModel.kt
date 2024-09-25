@@ -21,7 +21,7 @@ fun Location.map(
             id = UUID.randomUUID().toString(),
             teamId = teamId,
             longitude = this.longitude,
-            latitude = this.longitude,
+            latitude = this.latitude,
             time = TimeUtils.getTimeInstant(),
             altitude = this.altitude
         )

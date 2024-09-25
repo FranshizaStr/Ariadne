@@ -24,8 +24,9 @@ class WriteFinalFileUseCase @Inject constructor(
                 fileWriter.launchNewWrite(fileName) { uri ->
                     uri ?: throw Exception("uri is null for some reason")
                     context.contentResolver.openOutputStream(uri)?.writer()?.run {
+                        write("latitude, longitude, altitude, timestamp\r\n")
                         records.forEach { record ->
-                            write("${record.latitude}, ${record.longitude}, ${record.time}\r\n")
+                            write("${record.latitude}, ${record.longitude}, ${record.altitude}, ${record.time}\r\n")
                         }
                         flush()
                         close()
