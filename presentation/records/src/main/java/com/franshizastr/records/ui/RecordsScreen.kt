@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -24,7 +25,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontFamily
@@ -74,7 +74,7 @@ fun RecordsScreen(
                     modifier = Modifier
                         .weight(0.15f)
                         .background(
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.secondary,
                             shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp)
                         )
                 )
@@ -109,13 +109,13 @@ private fun TeamTitle(
         fontWeight = FontWeight.W700,
         letterSpacing = 0.1.em,
         textAlign = TextAlign.Center,
-        color = Color.White,
+        color = MaterialTheme.colorScheme.primary,
         modifier = Modifier
             .wrapContentHeight()
             .fillMaxWidth()
             .padding(top = 45.dp)
             .background(
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.secondary,
                 shape = RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp)
             )
     )
@@ -177,6 +177,7 @@ private fun RecordTextLine(
             inner = PathEffect.cornerPathEffect(50f)
         )
     )
+    val borderColor = MaterialTheme.colorScheme.secondary
 
     Row(
         horizontalArrangement = Arrangement.Absolute.Center,
@@ -184,7 +185,7 @@ private fun RecordTextLine(
             .fillMaxWidth()
             .wrapContentHeight()
             .drawBehind {
-                drawRoundRect(color = Color.Black, style = stroke)
+                drawRoundRect(color = borderColor,style = stroke)
             }
     ) {
         Text(
@@ -194,7 +195,7 @@ private fun RecordTextLine(
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.W700,
             letterSpacing = 0.1.em,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.tertiary,
             modifier = Modifier
                 .wrapContentHeight()
                 .fillMaxWidth()
@@ -214,6 +215,7 @@ private fun Button(
         width = 10f,
         pathEffect = PathEffect.cornerPathEffect(50f)
     )
+    val borderColor = MaterialTheme.colorScheme.primary
 
     Row(
         horizontalArrangement = Arrangement.Absolute.Center,
@@ -222,7 +224,7 @@ private fun Button(
             .padding(vertical = 15.dp)
             .wrapContentHeight()
             .drawBehind {
-                drawRoundRect(color = Color.White, style = stroke)
+                drawRoundRect(color = borderColor, style = stroke)
             }
             .clickable { onClick() }
     ) {
@@ -233,8 +235,8 @@ private fun Button(
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.W700,
             letterSpacing = 0.1.em,
-            color = Color.White,
             textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .wrapContentHeight()
                 .fillMaxWidth()

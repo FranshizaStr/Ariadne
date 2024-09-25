@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -57,7 +56,6 @@ fun Loading() {
                 fontFamily = FontFamily.Monospace,
                 fontWeight = FontWeight.W700,
                 letterSpacing = 0.1.em,
-                color = Color.Black,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 30.dp)

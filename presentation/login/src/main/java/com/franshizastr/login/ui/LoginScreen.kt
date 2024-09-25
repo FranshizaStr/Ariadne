@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -33,7 +35,6 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusEvent
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.key.Key
@@ -95,26 +96,24 @@ fun LoginScreen(
                         )
                     }
                 }
-                state.teams.map { team ->
-                    item {
-                        OldTeamCard(
-                            teamVO = team,
-                            onClick = {
-                                viewModel.onEvent(
-                                    LoginScreenEvent.OnOldTeamSelectEvent(team.id, team.teamName)
+                items(state.teams) { team ->
+                    OldTeamCard(
+                        teamVO = team,
+                        onClick = {
+                            viewModel.onEvent(
+                                LoginScreenEvent.OnOldTeamSelectEvent(team.id, team.teamName)
+                            )
+                        },
+                        focusManager = focusManager,
+                        onLongTapFinish = { newName ->
+                            viewModel.onEvent(
+                                LoginScreenEvent.LongTapOnTeamEvent(
+                                    teamName = newName,
+                                    teamId = team.id
                                 )
-                            },
-                            focusManager = focusManager,
-                            onLongTapFinish = { newName ->
-                                viewModel.onEvent(
-                                    LoginScreenEvent.LongTapOnTeamEvent(
-                                        teamName = newName,
-                                        teamId = team.id
-                                    )
-                                )
-                            },
-                        )
-                    }
+                            )
+                        },
+                    )
                 }
             }
 
@@ -157,7 +156,6 @@ internal fun Title() {
         fontFamily = FontFamily.Monospace,
         fontWeight = FontWeight.W700,
         letterSpacing = 0.1.em,
-        color = Color.Gray,
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
@@ -176,6 +174,7 @@ internal fun NewTeamCard(
     val previousFocusStateWasActive = remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
     var isHintVisible by remember { mutableStateOf(true) }
+    val borderColor = MaterialTheme.colorScheme.secondary
 
     val stroke = Stroke(
         width = 10f,
@@ -194,7 +193,7 @@ internal fun NewTeamCard(
             .fillMaxWidth()
             .wrapContentHeight()
             .drawBehind {
-                drawRoundRect(color = Color.Black, style = stroke)
+                drawRoundRect(color = borderColor,style = stroke)
             }
             .combinedClickable(
                 onClick = {
@@ -226,7 +225,7 @@ internal fun NewTeamCard(
                                 focusRequester.requestFocus()
                             },
                         style = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.tertiary
                     )
                 } else {
                     innerTextField()
@@ -269,6 +268,7 @@ internal fun OldTeamCard(
     val isClickable = remember { mutableStateOf(false) }
     val text = remember { mutableStateOf(teamVO.teamName) }
     val previousFocusStateWasActive = remember { mutableStateOf(false) }
+    val borderColor = MaterialTheme.colorScheme.secondary
 
     val stroke = Stroke(
         width = 10f,
@@ -289,7 +289,7 @@ internal fun OldTeamCard(
             .fillMaxWidth()
             .wrapContentHeight()
             .drawBehind {
-                drawRoundRect(color = Color.Black, style = stroke)
+                drawRoundRect(color = borderColor, style = stroke)
             }
             .combinedClickable(
                 onLongClick = { isClickable.value = !(isClickable.value) },
@@ -306,7 +306,8 @@ internal fun OldTeamCard(
                 lineHeight = 30.sp,
                 fontFamily = FontFamily.Monospace,
                 fontWeight = FontWeight.W700,
-                letterSpacing = 0.1.em
+                letterSpacing = 0.1.em,
+                color = MaterialTheme.colorScheme.tertiary
             ),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
