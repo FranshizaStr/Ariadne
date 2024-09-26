@@ -317,14 +317,6 @@ internal fun OldTeamCard(
                     keyboardController?.hide()
                 }
             ),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    onLongTapFinish(text.value)
-                    focusManager.clearFocus()
-                    keyboardController?.hide()
-                }
-            ),
             singleLine = true,
             modifier = Modifier
                 .wrapContentHeight()
