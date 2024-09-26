@@ -68,9 +68,9 @@ class CurrentGpsRepositoryImpl @Inject constructor(
         return if (isFineLocationPermissionGranted && isCoarsePermissionGranted) {
             val locationRequest = LocationRequest.Builder(
                 Priority.PRIORITY_HIGH_ACCURACY,
-                10000L
+                3000L
             )
-                .setMinUpdateIntervalMillis(5000L)
+                .setMinUpdateIntervalMillis(2000L)
                 .build()
             val locationSettingsBuilder = LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest)
