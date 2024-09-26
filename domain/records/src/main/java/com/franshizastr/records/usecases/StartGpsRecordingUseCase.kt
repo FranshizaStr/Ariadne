@@ -5,7 +5,7 @@ import com.franshizastr.CleanResult
 import com.franshizastr.records.models.map
 import javax.inject.Inject
 
-class GetCurrentGpsAndSaveRecordUseCase @Inject constructor(
+class StartGpsRecordingUseCase @Inject constructor(
     private val getGpsUseCase: GetCurrentGpsPointUseCase,
     private val saveRecordUseCase: SaveRecordUseCase
 ) {

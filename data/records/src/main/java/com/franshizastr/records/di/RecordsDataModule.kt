@@ -51,6 +51,7 @@ class RecordsDataModule {
 @Module
 interface RecordsRepositoryModule {
 
+    @Singleton
     @Binds
     fun bindRecordsRepository(repository: RecordRepositoryImpl): RecordRepository
 }
@@ -58,6 +59,7 @@ interface RecordsRepositoryModule {
 @Module
 interface GPSRepositoryModule {
 
+    @Singleton
     @Binds
     fun bindGPSRepository(repository: CurrentGpsRepositoryImpl): CurrentGpsRepository
 }

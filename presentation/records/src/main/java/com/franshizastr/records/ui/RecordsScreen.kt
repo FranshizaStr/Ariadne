@@ -6,14 +6,19 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -29,7 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.franshizastr.designsystem.Loading
 import com.franshizastr.designsystem.theme.AriadneTheme
 import com.franshizastr.records.AndroidFileWriter
+import com.franshizastr.records.R
 import com.franshizastr.records.models.RecordVO
 import com.franshizastr.records.models.RecordsScreenEvent
 import com.franshizastr.records.viewModel.RecordsViewModel
@@ -73,8 +82,12 @@ fun RecordsScreen(
                         val animatedModifier = Modifier.animateItem()
                         Record(record, animatedModifier)
                     }
+                    if (state.isLoading) {
+                        item { Loading(modifier = Modifier) }
+                    }
                 }
                 Buttons(
+                    isRecording = state.isRecording,
                     viewModel = viewModel,
                     modifier = Modifier
                         .weight(0.15f)
@@ -96,10 +109,6 @@ fun RecordsScreen(
                     viewModel.onEvent(RecordsScreenEvent.OnErrorEventShown)
                 }
             }
-        }
-
-        if (state.isLoading) {
-            Loading()
         }
     }
 }
@@ -131,27 +140,31 @@ private fun TeamTitle(
 private fun Buttons(
     viewModel: RecordsViewModel,
     modifier: Modifier = Modifier,
-    activityContext: Context
+    activityContext: Context,
+    isRecording: Boolean
 ) {
     Row(
         modifier = modifier
     ) {
         val weightedModifier = Modifier.weight(1f)
-        Button("Сохранить\nТочку", weightedModifier) {
+        StartableButton(
+            isRecording,
+            weightedModifier,
+        ) {
             viewModel.onEvent(
-                RecordsScreenEvent.TakeNewRecord(
+                RecordsScreenEvent.ChangeRecordingStatus(
                     activityContext as Activity
                 )
             )
         }
-        Button("Сохранить\r\nФайл", weightedModifier) {
+        TextButton("Сохранить\r\nФайл", weightedModifier) {
             viewModel.onEvent(
                 RecordsScreenEvent.SaveCSVFileWithRecords(
                     activityContext as AndroidFileWriter
                 )
             )
         }
-        Button("Удалить\r\nТочки", weightedModifier) {
+        TextButton("Удалить\r\nТочки", weightedModifier) {
             viewModel.onEvent(
                 RecordsScreenEvent.DeleteRecords
             )
@@ -217,10 +230,78 @@ private fun RecordTextLine(
 }
 
 @Composable
-private fun Button(
+private fun TextButton(
     text: String,
     modifier: Modifier,
     onClick: () -> Unit,
+) {
+    Button(
+        modifier,
+        onClick
+    ) {
+        Text(
+            text = text.uppercase(),
+            fontSize = 10.sp,
+            lineHeight = 13.sp,
+            fontFamily = FontFamily.Monospace,
+            fontWeight = FontWeight.W700,
+            letterSpacing = 0.1.em,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .align(Alignment.CenterVertically)
+                .padding(vertical = 30.dp)
+        )
+    }
+}
+
+@Composable
+private fun StartableButton(
+    isStarted: Boolean,
+    modifier: Modifier,
+    onClick: () -> Unit,
+) {
+    val playVector = ImageVector.vectorResource(id = R.drawable.baseline_play_arrow_30)
+    val playPainter = rememberVectorPainter(image = playVector)
+    val stopVector = ImageVector.vectorResource(id = R.drawable.baseline_stop_circle_30)
+    val stopPainter = rememberVectorPainter(image = stopVector)
+    Button(
+        modifier,
+        onClick
+    ) {
+        if (isStarted) {
+            Icon(
+                painter = stopPainter,
+                contentDescription = "stop location recording button",
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .align(Alignment.CenterVertically)
+                    .padding(vertical = 28.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+        } else {
+            Icon(
+                painter = playPainter,
+                contentDescription = "start location recording button",
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .align(Alignment.CenterVertically)
+                    .padding(vertical = 28.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@Composable
+private fun Button(
+    modifier: Modifier,
+    onClick: () -> Unit,
+    content: @Composable (RowScope.() -> Unit)
 ) {
     val stroke = Stroke(
         width = 10f,
@@ -239,20 +320,6 @@ private fun Button(
             }
             .clickable { onClick() }
     ) {
-        Text(
-            text = text.uppercase(),
-            fontSize = 10.sp,
-            lineHeight = 13.sp,
-            fontFamily = FontFamily.Monospace,
-            fontWeight = FontWeight.W700,
-            letterSpacing = 0.1.em,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .align(Alignment.CenterVertically)
-                .padding(vertical = 30.dp)
-        )
+        content()
     }
 }

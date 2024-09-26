@@ -10,8 +10,9 @@ import com.franshizastr.records.models.RecordsScreenEvent
 import com.franshizastr.records.models.RecordsState
 import com.franshizastr.records.models.map
 import com.franshizastr.records.usecases.GetAllRecordsByTeamIdUseCase
-import com.franshizastr.records.usecases.GetCurrentGpsAndSaveRecordUseCase
+import com.franshizastr.records.usecases.StartGpsRecordingUseCase
 import com.franshizastr.records.usecases.RemoveTeamRecordsUseCase
+import com.franshizastr.records.usecases.StopGpsRecordingUseCase
 import com.franshizastr.records.usecases.WriteFinalFileUseCase
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,19 +28,20 @@ class RecordsViewModel(
     private val teamName: String,
     private val getCSVFileNameForTeamUseCase: GetCSVFileNameForTeamUseCase,
     private val getAllRecordsByTeamIdUseCase: GetAllRecordsByTeamIdUseCase,
-    private val getCurrentGpsAndSaveRecordUseCase: GetCurrentGpsAndSaveRecordUseCase,
+    private val startGpsRecordingUseCase: StartGpsRecordingUseCase,
     private val writeFinalFileUseCase: WriteFinalFileUseCase,
-    private val removeTeamRecordsUseCase: RemoveTeamRecordsUseCase
+    private val removeTeamRecordsUseCase: RemoveTeamRecordsUseCase,
+    private val stopGpsRecordingUseCase: StopGpsRecordingUseCase
 ) : ViewModel() {
 
     private val _error = MutableStateFlow<ErrorVO?>(null)
     private val _isLoading = MutableStateFlow(false)
+    private val _isRecording = MutableStateFlow(false)
     private val _state = getAllRecordsByTeamIdUseCase
         .execute(teamId)
         .unwrapWithCallbacks(
             onSuccess = { result ->
                 result.map { models ->
-                    _isLoading.emit(false)
                     val recordVos = models.map { model -> model.map() }
                     RecordsState(records = recordVos)
                 }
@@ -54,17 +56,32 @@ class RecordsViewModel(
             }
         )
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), RecordsState())
-    val state = combine(_state, _error, _isLoading) { state, error, isLoading ->
-        state.copy(error = error, isLoading = isLoading)
+    val state = combine(_state, _error, _isLoading, _isRecording) { state, error, isLoading, isRecording ->
+        state.copy(error = error, isLoading = isLoading, isRecording = isRecording)
     }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), RecordsState())
 
     fun onEvent(event: RecordsScreenEvent) {
         when(event) {
-            is RecordsScreenEvent.TakeNewRecord -> {
+            is RecordsScreenEvent.ChangeRecordingStatus -> {
                 viewModelScope.launch {
-                    _isLoading.emit(true)
-                    getCurrentGpsAndSaveRecordUseCase.execute(teamId, event.activity)
+                    if (!_isRecording.value) {
+                        _isLoading.emit(true)
+                        val result = startGpsRecordingUseCase.execute(teamId, event.activity)
+                        when (result) {
+                            is CleanResult.Success -> _isRecording.emit(true)
+                            is CleanResult.Failure -> {
+                                _isRecording.emit(false)
+                                _error.emit(
+                                    result.error.map()
+                                )
+                            }
+                        }
+                    } else {
+                        stopGpsRecordingUseCase.execute()
+                        _isLoading.emit(false)
+                        _isRecording.emit(false)
+                    }
                 }
             }
             is RecordsScreenEvent.SaveCSVFileWithRecords -> {

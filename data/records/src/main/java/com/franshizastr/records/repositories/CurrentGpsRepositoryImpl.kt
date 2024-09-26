@@ -32,7 +32,7 @@ class CurrentGpsRepositoryImpl @Inject constructor(
     private var locationCoroutineScope: CoroutineScope? = CoroutineScope(dispatcher)
     private var locationCallback: LocationCallback? = null
 
-    override suspend fun getCurrentGps(
+    override suspend fun startGpsRecording(
         activity: Activity,
         locationResultCallback: LocationResultCallback
     ): CleanResult<Unit> {
@@ -135,6 +135,18 @@ class CurrentGpsRepositoryImpl @Inject constructor(
                 )
             )
         }
+    }
+
+    override suspend fun stopGpsRecording() {
+        locationCoroutineScope?.cancel()
+        locationCoroutineScope = null
+        locationCallback?.let { callback ->
+            withContext(dispatcher) {
+                val stopTask = locationProvider.removeLocationUpdates(callback)
+                Tasks.await(stopTask)
+            }
+        }
+        locationCallback = null
     }
 
     companion object {

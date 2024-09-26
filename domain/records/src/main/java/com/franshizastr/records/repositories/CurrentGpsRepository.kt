@@ -8,8 +8,10 @@ typealias LocationResultCallback = suspend (locationResult: LocationResult) -> U
 
 interface CurrentGpsRepository {
 
-    suspend fun getCurrentGps(
+    suspend fun startGpsRecording(
         activity: Activity,
         locationResultCallback: LocationResultCallback
     ): CleanResult<Unit>
+
+    suspend fun stopGpsRecording()
 }

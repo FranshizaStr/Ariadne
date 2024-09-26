@@ -12,6 +12,6 @@ class GetCurrentGpsPointUseCase @Inject constructor(private val repository: Curr
         activity: Activity,
         locationResultCallback: LocationResultCallback
     ): CleanResult<Unit> {
-        return repository.getCurrentGps(activity, locationResultCallback)
+        return repository.startGpsRecording(activity, locationResultCallback)
     }
 }
