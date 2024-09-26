@@ -25,14 +25,14 @@ import com.franshizastr.login.di.LoginPresentationComponent
 import com.franshizastr.login.navigation.LoginScreen
 import com.franshizastr.login.ui.LoginScreen
 import com.franshizastr.login.viewModel.LoginViewModel
-import com.franshizastr.records.AndroidFileWrite
+import com.franshizastr.records.AndroidFileWriter
 import com.franshizastr.records.di.DaggerRecordsPresentationComponent
 import com.franshizastr.records.di.RecordsPresentationComponent
 import com.franshizastr.records.navigation.RecordsScreen
 import com.franshizastr.records.ui.RecordsScreen
 import com.franshizastr.records.viewModel.RecordsViewModel
 
-class MainActivity : ComponentActivity(), AndroidFileWrite {
+class MainActivity : ComponentActivity(), AndroidFileWriter {
 
     private var loginDiComponent: LoginPresentationComponent? = null
     private var loginViewModel: LoginViewModel? = null
@@ -126,7 +126,6 @@ class MainActivity : ComponentActivity(), AndroidFileWrite {
                             .recordsDeps(this@MainActivity.appComponent)
                             .teamId(args.teamId)
                             .teamName(args.teamName)
-                            .androidFileWriter(this@MainActivity)
                             .build()
                         recordsDiComponent?.let { component ->
                             recordsViewModel = daggerViewModel {

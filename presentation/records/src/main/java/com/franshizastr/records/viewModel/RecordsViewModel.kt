@@ -32,9 +32,9 @@ class RecordsViewModel(
     private val removeTeamRecordsUseCase: RemoveTeamRecordsUseCase
 ) : ViewModel() {
 
-    val _error = MutableStateFlow<ErrorVO?>(null)
-    val _isLoading = MutableStateFlow(false)
-    val _state = getAllRecordsByTeamIdUseCase
+    private val _error = MutableStateFlow<ErrorVO?>(null)
+    private val _isLoading = MutableStateFlow(false)
+    private val _state = getAllRecordsByTeamIdUseCase
         .execute(teamId)
         .unwrapWithCallbacks(
             onSuccess = { result ->
@@ -64,7 +64,7 @@ class RecordsViewModel(
             is RecordsScreenEvent.TakeNewRecord -> {
                 viewModelScope.launch {
                     _isLoading.emit(true)
-                    getCurrentGpsAndSaveRecordUseCase.execute(teamId)
+                    getCurrentGpsAndSaveRecordUseCase.execute(teamId, event.activity)
                 }
             }
             is RecordsScreenEvent.SaveCSVFileWithRecords -> {
@@ -81,7 +81,8 @@ class RecordsViewModel(
                             val fileName = nameResult.value
                             writeFinalFileUseCase.execute(
                                 records = records,
-                                fileName = fileName
+                                fileName = fileName,
+                                fileWriter = event.fileWriter
                             )
                         }
                         nameResult is CleanResult.Failure -> {

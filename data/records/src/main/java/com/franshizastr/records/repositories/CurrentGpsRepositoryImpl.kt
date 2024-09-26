@@ -1,35 +1,43 @@
 package com.franshizastr.records.repositories
 
 import android.Manifest
+import android.app.Activity
 import android.content.pm.PackageManager
-import android.location.Location
+import android.os.Looper
 import androidx.core.app.ActivityCompat
 import com.franshizastr.CleanResult
 import com.franshizastr.ContextProvider
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
-import com.google.android.gms.tasks.CancellationToken
-import com.google.android.gms.tasks.CancellationTokenSource
-import com.google.android.gms.tasks.OnTokenCanceledListener
 import com.google.android.gms.tasks.Tasks
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class CurrentGpsRepositoryImpl @Inject constructor(
     private val contextProvider: ContextProvider,
     private val locationProvider: FusedLocationProviderClient,
-    private val dispatcher: CoroutineDispatcher
+    private val dispatcher: CoroutineDispatcher,
 ): CurrentGpsRepository {
 
-    private val defaultCancellationToken = object : CancellationToken() {
-        override fun onCanceledRequested(p0: OnTokenCanceledListener) =
-            CancellationTokenSource().token
+    private var locationCoroutineScope: CoroutineScope? = CoroutineScope(dispatcher)
+    private var locationCallback: LocationCallback? = null
 
-        override fun isCancellationRequested() = false
-    }
+    override suspend fun getCurrentGps(
+        activity: Activity,
+        locationResultCallback: LocationResultCallback
+    ): CleanResult<Unit> {
 
-    override suspend fun getCurrentGps(): CleanResult<Location> {
+        // проверяем разрешения
         val context = contextProvider.context
         val fineLocationPermissionStatus = ActivityCompat.checkSelfPermission(
             context,
@@ -44,23 +52,76 @@ class CurrentGpsRepositoryImpl @Inject constructor(
         val isCoarsePermissionGranted =
             coarseLocationPermissionStatus == PackageManager.PERMISSION_GRANTED
 
+        // обновляем колбэк и скоуп для корутины
+        locationCoroutineScope?.cancel()
+        locationCoroutineScope = CoroutineScope(dispatcher)
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(p0: LocationResult) {
+                locationCoroutineScope?.launch {
+                    locationResultCallback(p0)
+                }
+                super.onLocationResult(p0)
+            }
+        }
+
+
         return if (isFineLocationPermissionGranted && isCoarsePermissionGranted) {
-            val locationTask = locationProvider.getCurrentLocation(
+            val locationRequest = LocationRequest.Builder(
                 Priority.PRIORITY_HIGH_ACCURACY,
-                defaultCancellationToken
+                10000L
             )
+                .setMinUpdateIntervalMillis(5000L)
+                .build()
+            val locationSettingsBuilder = LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest)
+            val locationSettingClient =
+                LocationServices.getSettingsClient(context)
+            val locationSettingsTask =
+                locationSettingClient.checkLocationSettings(locationSettingsBuilder.build())
             withContext(dispatcher) {
                 try {
-                    val location = Tasks.await(locationTask)
-                    CleanResult.Success(location)
-                } catch (ex: Throwable) {
-                    CleanResult.Failure(
+                    Tasks.await(locationSettingsTask)
+                    locationCallback?.let { callback ->
+                        locationProvider.requestLocationUpdates(
+                            locationRequest,
+                            callback,
+                            Looper.getMainLooper()
+                        )
+                        CleanResult.Success(Unit)
+                    } ?: CleanResult.Failure(
                         error = CleanResult.Error(
                             previousError = null,
-                            throwable = ex,
+                            throwable = null,
                             level = CleanResult.Error.ErrorLevel.DATA,
-                            message = "error happened while retrieving current user location"
+                            message = "there was no location callback"
                         )
+                    )
+                } catch (ex: Exception) {
+                    val locationSettingsError = CleanResult.Error(
+                        previousError = null,
+                        throwable = ex,
+                        level = CleanResult.Error.ErrorLevel.DATA,
+                        message = "error happened while retrieving current user location"
+                    )
+                    if (ex is ResolvableApiException) {
+                        try {
+                            ex.startResolutionForResult(
+                                activity,
+                                REQUEST_CHECK_SETTINGS
+                            )
+                        } catch (resolutionEx: Exception) {
+                            CleanResult.Failure(
+                                error = CleanResult.Error(
+                                    previousError = locationSettingsError,
+                                    throwable = ex,
+                                    level = CleanResult.Error.ErrorLevel.DATA,
+                                    message = "error happened while retrieving resolution for location"
+                                )
+                            )
+                        }
+                    }
+                    CleanResult.Failure(
+                        error = locationSettingsError
                     )
                 }
             }
@@ -74,5 +135,9 @@ class CurrentGpsRepositoryImpl @Inject constructor(
                 )
             )
         }
+    }
+
+    companion object {
+        private const val REQUEST_CHECK_SETTINGS = 1
     }
 }

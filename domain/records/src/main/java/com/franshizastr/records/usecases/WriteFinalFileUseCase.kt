@@ -2,7 +2,7 @@ package com.franshizastr.records.usecases
 
 import com.franshizastr.CleanResult
 import com.franshizastr.ContextProvider
-import com.franshizastr.records.AndroidFileWrite
+import com.franshizastr.records.AndroidFileWriter
 import com.franshizastr.records.models.RecordModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -11,12 +11,12 @@ import javax.inject.Inject
 class WriteFinalFileUseCase @Inject constructor(
     private val contextProvider: ContextProvider,
     private val dispatcher: CoroutineDispatcher,
-    private val fileWriter: AndroidFileWrite,
 ) {
 
     suspend fun execute(
         records: List<RecordModel>,
-        fileName: String
+        fileName: String,
+        fileWriter: AndroidFileWriter
     ): CleanResult<Unit> {
         val context = contextProvider.context
         return withContext(dispatcher) {

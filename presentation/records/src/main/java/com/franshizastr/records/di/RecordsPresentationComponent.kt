@@ -3,7 +3,6 @@ package com.franshizastr.records.di
 import android.content.Context
 import com.franshizastr.core.di.DispatchersModule
 import com.franshizastr.records.usecases.GetCSVFileNameForTeamUseCase
-import com.franshizastr.records.AndroidFileWrite
 import com.franshizastr.records.repositories.CurrentGpsRepository
 import com.franshizastr.records.repositories.RecordRepository
 import com.franshizastr.records.usecases.GetAllRecordsByTeamIdUseCase
@@ -51,9 +50,6 @@ interface RecordsPresentationComponent {
 
         @BindsInstance
         fun teamName(@Named("teamName") teamName: String): Builder
-
-        @BindsInstance
-        fun androidFileWriter(fileWrite: AndroidFileWrite): Builder
 
         fun build(): RecordsPresentationComponent
     }

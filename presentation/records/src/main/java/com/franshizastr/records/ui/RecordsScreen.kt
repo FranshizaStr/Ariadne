@@ -1,6 +1,8 @@
 package com.franshizastr.records.ui
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.franshizastr.designsystem.Loading
 import com.franshizastr.designsystem.theme.AriadneTheme
+import com.franshizastr.records.AndroidFileWriter
 import com.franshizastr.records.models.RecordVO
 import com.franshizastr.records.models.RecordsScreenEvent
 import com.franshizastr.records.viewModel.RecordsViewModel
@@ -50,6 +54,7 @@ fun RecordsScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val hostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val activityContext = LocalContext.current
 
     AriadneTheme {
 
@@ -76,7 +81,8 @@ fun RecordsScreen(
                         .background(
                             color = MaterialTheme.colorScheme.secondary,
                             shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp)
-                        )
+                        ),
+                    activityContext = activityContext
                 )
             }
 
@@ -124,7 +130,8 @@ private fun TeamTitle(
 @Composable
 private fun Buttons(
     viewModel: RecordsViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    activityContext: Context
 ) {
     Row(
         modifier = modifier
@@ -132,12 +139,16 @@ private fun Buttons(
         val weightedModifier = Modifier.weight(1f)
         Button("Сохранить\nТочку", weightedModifier) {
             viewModel.onEvent(
-                RecordsScreenEvent.TakeNewRecord
+                RecordsScreenEvent.TakeNewRecord(
+                    activityContext as Activity
+                )
             )
         }
         Button("Сохранить\r\nФайл", weightedModifier) {
             viewModel.onEvent(
-                RecordsScreenEvent.SaveCSVFileWithRecords
+                RecordsScreenEvent.SaveCSVFileWithRecords(
+                    activityContext as AndroidFileWriter
+                )
             )
         }
         Button("Удалить\r\nТочки", weightedModifier) {

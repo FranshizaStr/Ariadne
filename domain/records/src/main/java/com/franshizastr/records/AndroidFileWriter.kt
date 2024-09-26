@@ -3,7 +3,7 @@ package com.franshizastr.records
 import android.net.Uri
 import com.franshizastr.CleanResult
 
-interface AndroidFileWrite {
+interface AndroidFileWriter {
     fun launchNewWrite(
         fileName: String,
         newWriteToFileLambda: (uri: Uri?) -> Unit

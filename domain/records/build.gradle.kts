@@ -37,6 +37,7 @@ dependencies {
 
     // di
     implementation(libs.dagger)
+    implementation(libs.play.services.location)
     kapt(libs.dagger.compiler)
 
     // projects
