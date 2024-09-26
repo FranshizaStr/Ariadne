@@ -12,7 +12,7 @@ class GetCSVFileNameForTeamUseCase @Inject constructor(
     suspend fun execute(teamId: String, teamName: String): CleanResult<String> {
         return withContext(dispatcher) {
             CleanResult.Success(
-                value = "race_{${teamName}}_{$teamId}"
+                value = "race_${teamName}_$teamId"
             )
         }
     }
